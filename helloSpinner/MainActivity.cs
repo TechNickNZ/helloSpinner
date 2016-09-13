@@ -23,6 +23,7 @@ namespace helloSpinner
     {
         private ProgressDialog _progressDialog;
         private LoginService _loginService;
+        private bool hasLoaded;
 
         protected override void OnCreate(Bundle bundle)
         {
@@ -73,6 +74,7 @@ namespace helloSpinner
 
         private void loadingScreen()
         {
+            hasLoaded = false;
             _progressDialog.Show();
 
             ThreadPool.QueueUserWorkItem(state =>
@@ -81,16 +83,21 @@ namespace helloSpinner
 
                 RunOnUiThread(() => onSuccessfulLogin());
             });
+            while (!hasLoaded);
+            new AlertDialog.Builder(this)
+                .SetTitle("Login Successful")
+                .SetMessage("Great success!")
+                .Show();
         }
 
         private void onSuccessfulLogin()
         {
             _progressDialog.Hide();
-
-            new AlertDialog.Builder(this)
-                .SetTitle("Login Successful")
-                .SetMessage("Great success!")
-                .Show();
+            hasLoaded = true;
+            //new AlertDialog.Builder(this)
+            //    .SetTitle("Login Successful")
+            //    .SetMessage("Great success!")
+            //    .Show();
         }
     }
 }
